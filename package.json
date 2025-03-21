@@ -1,0 +1,36 @@
+{
+  "name": "fs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/6th-ViewMyStartup-5team-FS/FS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/6th-ViewMyStartup-5team-FS/FS/issues"
+  },
+  "homepage": "https://github.com/6th-ViewMyStartup-5team-FS/FS#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.13.10",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.5.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "prisma": {
+    "schema": "./src/db/prisma/schema.prisma"
+  }
+}
