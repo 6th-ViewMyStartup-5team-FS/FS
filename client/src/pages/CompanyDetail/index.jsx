@@ -11,7 +11,7 @@ import InvestmentModal from "../../components/modal/InvestmentModal";
 import { useParams } from "react-router-dom";
 import sampleImg from "../../assets/images/company/sample.png";
 import PopupOneButton from "../../components/modal/PopupOneButton";
-import { media } from "../../styles/mixin";
+import styles from "./companyDetail.module.css";
 
 function CompanyDetail() {
   const { companyId } = useParams();
@@ -20,6 +20,8 @@ function CompanyDetail() {
   const [investors, setInvestors] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ispopupOpen, setIsPopupOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     if (!companyId) {
@@ -40,7 +42,7 @@ function CompanyDetail() {
       );
 
       setCompanyData(company);
-      // setInvestors(filtered);
+      setInvestors(filtered);
       setInvestors([
         ...investments.filter((inv) => inv.company.id === companyId),
       ]);
@@ -48,6 +50,15 @@ function CompanyDetail() {
       console.error("Error fetching company data:", error);
     }
   };
+
+  //페이지네이션 로직
+  const currentInvestors = investors.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  //디버깅
+  console.log(investors.length);
 
   // 반응형 사이즈 계산
   useEffect(() => {
@@ -64,24 +75,27 @@ function CompanyDetail() {
 
   if (!companyData) return <p>Loading...</p>;
 
+  //디버깅
+  console.log(mediaSize);
+
   return (
     <Wrap>
-      <CompanyDetailWrap $mediaSize={mediaSize}>
-        <CompanyContainer>
+      <CompanyDetailWrap $size={mediaSize}>
+        <div className={styles.companyContainer}>
           <Img
             $mediaSize={mediaSize}
             src={companyData?.imageUrl || sampleImg}
             alt="Company"
           />
-          <TitleWrap>
+          <div className={styles.titleWrap}>
             <Title $mediaSize={mediaSize}>{companyData.name}</Title>
             <Discription $mediaSize={mediaSize}>
               {companyData.category}
             </Discription>
-          </TitleWrap>
-        </CompanyContainer>
+          </div>
+        </div>
 
-        <AmountCardContainer>
+        <div className={styles.amountCardContainer}>
           <AmountCard
             char="누적 투자 금액"
             type="price"
@@ -100,7 +114,7 @@ function CompanyDetail() {
             number={companyData.numberOfEmployees}
             mediaSize={mediaSize}
           />
-        </AmountCardContainer>
+        </div>
 
         <IntroContainer>
           <IntroTitle>기업 소개</IntroTitle>
@@ -111,13 +125,13 @@ function CompanyDetail() {
           <InvestTitle>View My Startup에서 받은 투자</InvestTitle>
           <BtnLarge
             type="orange"
-            size={mediaSize}
+            mediaSize={mediaSize}
             label="기업 투자하기"
             onClick={() => setIsModalOpen(true)}
           />
         </InvestContainer>
 
-        <Hr />
+        <Hr $mediaSize={mediaSize} />
 
         <TableWrap>
           <TotalAmount>
@@ -129,29 +143,39 @@ function CompanyDetail() {
           </TotalAmount>
 
           {/* 수정: InvestmentTable에 onRefresh 전달 */}
-          <InvestmentTable data={investors} onRefresh={fetchData} />
+          <InvestmentTable
+            data={currentInvestors} //5명의 투자자마 보여주기
+            onRefresh={fetchData}
+            mediaSize={mediaSize}
+          />
         </TableWrap>
 
         <PaginationWrap>
-          <BtnPagination size="big" />
+          <BtnPagination
+            mediaSize={mediaSize}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={investors.length}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </PaginationWrap>
       </CompanyDetailWrap>
 
       {isModalOpen && (
         <InvestmentModal
+          mediaSize={mediaSize}
           onClose={() => setIsModalOpen(false)}
           onSuccess={() => {
             setIsPopupOpen(true);
             fetchData(); // 화면이 최신 데이터로 바뀜
           }}
-          size={mediaSize}
         />
       )}
 
       {ispopupOpen && (
         <PopupOneButton
           onClose={() => setIsPopupOpen(false)}
-          size={mediaSize}
+          mediaSize={mediaSize}
           type={"success"}
         />
       )}
@@ -171,28 +195,22 @@ const Wrap = styled.div`
 `;
 
 const CompanyDetailWrap = styled.div`
-  width: ${({ $mediaSize }) =>
-    $mediaSize === "big"
-      ? "1200px"
-      : $mediaSize === "medium"
+  width: ${(props) =>
+    props.$mediaSize === "small"
+      ? "343px"
+      : props.$mediaSize === "medium"
       ? "696px"
-      : "343px"};
-`;
+      : null};
 
-const CompanyContainer = styled.div`
-  display: flex;
-  align-items: center;
-  height: 112px;
-  padding-bottom: 20px;
-`;
-
-const TitleWrap = styled.div`
-  flex-direction: column;
+  margin: ${(props) =>
+    props.$mediaSize === "medium" || props.$mediaSize === "small"
+      ? "0 16px 68px 16px"
+      : "0 23px 115px 13px"};
 `;
 
 const Img = styled.img`
-  width: ${({ $mediaSize }) => ($mediaSize === "small" ? "49px" : "80px")};
-  height: ${({ $mediaSize }) => ($mediaSize === "small" ? "49px" : "80px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "49px" : "80px")};
+  height: ${(props) => (props.$mediaSize === "small" ? "49px" : "80px")};
   border-radius: 100%;
   object-fit: cover;
   margin-right: 20px;
@@ -210,11 +228,6 @@ const Discription = styled.p`
   color: ${gray_200};
   font-weight: 500;
   margin: 0;
-`;
-
-const AmountCardContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
 `;
 
 const IntroContainer = styled.div`
@@ -236,8 +249,15 @@ const IntroText = styled.div`
 
 const Hr = styled.hr`
   border: none;
-  border-top: 1px solid ${gray_200};
-  margin: 20px 0;
+  border-top: 1px solid #2e2e2e;
+  margin: ${(props) =>
+    props.$mediaSize === "big"
+      ? "20px"
+      : props.$mediaSize === "medium"
+      ? "16px"
+      : props.$mediaSize === "small"
+      ? "16px"
+      : null};
 `;
 
 const InvestContainer = styled.div`
@@ -250,9 +270,12 @@ const InvestContainer = styled.div`
 const InvestTitle = styled.div`
   font-weight: 700;
   color: white;
-  ${media.mobile`
-      font-size: 16px;
-  `}
+  font-size: ${(props) =>
+    props.$mediaSize === "big"
+      ? "20px"
+      : props.$mediaSize === "medium" || props.$mediaSize === "small"
+      ? "16"
+      : null};
 `;
 
 const TableWrap = styled.div`

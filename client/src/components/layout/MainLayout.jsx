@@ -29,7 +29,7 @@ function MainLayout() {
 
   return (
     <>
-      <Nav size={mediaSize} />
+      <Nav mediaSize={mediaSize} />
       <Outlet />
     </>
   );

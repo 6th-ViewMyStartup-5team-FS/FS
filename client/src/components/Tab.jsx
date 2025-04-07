@@ -2,10 +2,10 @@ import React from "react";
 import styled from "styled-components";
 import { black_400, gray_200 } from "../styles/colors";
 
-//  아래 props는 color=white/gray  size=big/small
-function Tab({ color, size }) {
+//  아래 props는 color=white/gray  mediaSize=big/small
+function Tab({ color, mediaSize }) {
   return (
-    <Text $color={color} $size={size}>
+    <Text $color={color} $mediaSize={mediaSize}>
       나의 기업 비교
     </Text>
   );
@@ -13,9 +13,9 @@ function Tab({ color, size }) {
 
 const Text = styled.div`
   background-color: ${black_400};
-  font-size: ${(props) => {
-    if (props.$size === "big") return "15px";
-    if (props.$size === "small") return "12px";
+  font-mediasize: ${(props) => {
+    if (props.$mediaSize === "big") return "15px";
+    if (props.$mediaSize === "small") return "12px";
   }};
   color: ${(props) => {
     if (props.$color === "white") return "#FFFFFF";
@@ -23,13 +23,13 @@ const Text = styled.div`
   }};
 
   width: ${(props) => {
-    if (props.$size === "big") return "119px";
-    if (props.$size === "small") return "84px";
+    if (props.$mediaSize === "big") return "119px";
+    if (props.$mediaSize === "small") return "84px";
   }};
 
   height: ${(props) => {
-    if (props.$size === "big") return "60px";
-    if (props.$size === "small") return "56px";
+    if (props.$mediaSize === "big") return "60px";
+    if (props.$mediaSize === "small") return "56px";
   }};
 `;
 

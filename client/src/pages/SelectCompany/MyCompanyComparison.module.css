@@ -1,5 +1,5 @@
 .title {
-  font-size: 18px;
+  font-size: 20px;
   text-align: left;
 }
 
@@ -19,6 +19,7 @@
   border-radius: 8px;
   width: 100%;
   height: 300px;
+  max-width: 1200px;
 }
 
 .addBox {
@@ -59,11 +60,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #1e1e1e;
   padding: 24px 16px;
   border-radius: 10px;
-  width: 126px;
-  height: 187px;
   text-align: center;
 }
 
@@ -98,4 +96,20 @@
   font-size: 13px;
   text-decoration: underline;
   cursor: pointer;
+}
+
+@media (max-width: 745px) {
+  .addBoxWrapper {
+    height: 240px;
+  }
+}
+
+@media (max-width: 375px) {
+  .addBoxWrapper {
+    /* width: 343px; */
+    height: 180px;
+  }
+  .title {
+    font-size: 16px;
+  }
 }

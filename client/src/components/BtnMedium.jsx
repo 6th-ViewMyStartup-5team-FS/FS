@@ -5,15 +5,15 @@ import grayLoadingImg from "../assets/images/btnMedium/grayLoading.png";
 import { black_100, brand_orange, gray_200 } from "../styles/colors";
 
 {
-  /* 아래 props는 type=black/orange  size=big/small src=white/gray 추가 */
+  /* 아래 props는 type=black/orange  mediaSize=big/small src=white/gray 추가 */
 }
-function BtnMedium({ type, size, src }) {
+function BtnMedium({ type, mediaSize, src }) {
   const imageSrc =
     src === "white" ? whiteLoadingImg : src === "gray" ? grayLoadingImg : null;
   return (
-    <Container $type={type} $size={size}>
+    <Container $type={type} $mediaSize={mediaSize}>
       <Img src={imageSrc}></Img>
-      <Text $size={size}>기업 비교하기</Text>
+      <Text $mediaSize={mediaSize}>기업 비교하기</Text>
     </Container>
   );
 }
@@ -48,23 +48,23 @@ const Container = styled.div`
   }};
 
   width: ${(props) => {
-    if (props.$size === "big") return "183px";
-    if (props.$size === "small") return "135px";
+    if (props.$mediaSize === "big") return "183px";
+    if (props.$mediaSize === "small") return "135px";
   }};
   height: ${(props) => {
-    if (props.$size === "big") return "48px";
-    if (props.$size === "small") return "40px";
+    if (props.$mediaSize === "big") return "48px";
+    if (props.$mediaSize === "small") return "40px";
   }};
 `;
 
 const Text = styled.div`
   padding: ${(props) => {
-    if (props.$size === "big") return "13px, 48px, 13px, 48px";
-    if (props.$size === "small") return "13px, 24px, 13px, 24px";
+    if (props.$mediaSize === "big") return "13px, 48px, 13px, 48px";
+    if (props.$mediaSize === "small") return "13px, 24px, 13px, 24px";
   }};
   font-size: ${(props) => {
-    if (props.$size === "big") return "16px";
-    if (props.$size === "small") return "14px";
+    if (props.$mediaSize === "big") return "16px";
+    if (props.$mediaSize === "small") return "14px";
   }};
 `;
 

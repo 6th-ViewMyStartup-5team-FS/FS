@@ -4,18 +4,13 @@ import company from "../assets/images/company/sample.png";
 import deleteBtn from "../assets/images/deleteBtn.png";
 import { black_300, gray_400, gray_200, gray_100 } from "../styles/colors";
 
-function List({
-  size = "big",
-  src = company,
-  companyName = "코드잇",
-  discription = "에듀테크",
-}) {
+function List({ mediaSize, src = company, companyName, discription }) {
   return (
-    <Container $size={size}>
+    <Container $mediaSize={mediaSize}>
       <DeleteButton src={deleteBtn} alt="삭제 버튼" />
-      <Img $size={size} src={src} alt="Company" />
-      <Title $size={size}>{companyName}</Title>
-      <Discription $size={size}>{discription}</Discription>
+      <Img $mediaSize={mediaSize} src={src} alt="Company" />
+      <Title $mediaSize={mediaSize}>{companyName}</Title>
+      <Discription $mediaSize={mediaSize}>{discription}</Discription>
     </Container>
   );
 }
@@ -23,6 +18,7 @@ function List({
 export default List;
 
 const Container = styled.div`
+  box-sizing: border-box;
   position: relative; /* 삭제 버튼을 절대 위치로 배치할 수 있도록 설정 */
   display: flex;
   flex-direction: column;
@@ -31,9 +27,8 @@ const Container = styled.div`
   background-color: ${gray_400};
   color: ${gray_100};
   border-radius: 10px;
-  box-sizing: border-box;
-  width: ${(props) => (props.$size === "big" ? "126px" : "104px")};
-  height: ${(props) => (props.$size === "big" ? "187px" : "163px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "104px" : "126px")};
+  height: ${(props) => (props.$mediaSize === "small" ? "163px" : "187px")};
 `;
 
 const DeleteButton = styled.img`
@@ -46,13 +41,13 @@ const DeleteButton = styled.img`
 `;
 
 const Img = styled.img`
-  width: ${(props) => (props.$size === "big" ? "80px" : "64px")};
-  height: ${(props) => (props.$size === "big" ? "80px" : "64px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "64px" : "80px")};
+  height: ${(props) => (props.$mediaSize === "small" ? "64px" : "80px")};
   border-radius: 100%;
 `;
 
 const Title = styled.h1`
-  font-size: ${(props) => (props.$size === "big" ? "16px" : "14px")};
+  font-size: ${(props) => (props.$mediaSize === "small" ? "14px" : "16px")};
   color: white;
   width: auto;
   white-space: nowrap;
@@ -60,7 +55,7 @@ const Title = styled.h1`
 `;
 
 const Discription = styled.p`
-  font-size: ${(props) => (props.$size === "big" ? "14px" : "12px")};
+  font-size: ${(props) => (props.$mediaSize === "small" ? "12px" : "14px")};
   color: ${gray_200};
   margin: 0;
 `;

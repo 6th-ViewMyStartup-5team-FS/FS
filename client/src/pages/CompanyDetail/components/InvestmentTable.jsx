@@ -14,7 +14,7 @@ import {
   gray_300,
 } from "../../../styles/colors";
 
-function InvestmentTable({ data = [], onRefresh }) {
+function InvestmentTable({ data = [], onRefresh, mediaSize }) {
   const sortedData = [...data].sort((a, b) => b.amount - a.amount);
   const [selectedInvestment, setSelectedInvestment] = useState(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -23,6 +23,8 @@ function InvestmentTable({ data = [], onRefresh }) {
   const [popupType, setPopupType] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedDropdownId, setSelectedDropdownId] = useState(null);
+
+  console.log("InvestmentTable - mediaSize:", mediaSize);
 
   const handlePasswordSubmit = async (password) => {
     if (!selectedInvestment) return;
@@ -72,14 +74,15 @@ function InvestmentTable({ data = [], onRefresh }) {
         <ModalPassword
           onClose={() => setIsPasswordModalOpen(false)}
           onDelete={handlePasswordSubmit}
-          isUpdateMode={isUpdateMode} // 수정 모드 상태 전달
+          isUpdateMode={isUpdateMode}
+          mediaSize={mediaSize}
         />
       )}
 
       {isUpdateModalOpen && selectedInvestment && (
         <UpdateInvestmentModal
           onClose={() => setIsUpdateModalOpen(false)}
-          size="big"
+          mediaSize={mediaSize}
           investment={selectedInvestment}
           onSuccess={handleUpdateSuccess}
         />
@@ -89,76 +92,88 @@ function InvestmentTable({ data = [], onRefresh }) {
         <PopupOneButton
           onClose={() => setIsPopupOpen(false)}
           type={popupType}
+          mediaSize={mediaSize}
         />
       )}
 
-      <Table>
-        <thead>
-          <tr>
-            <Th>투자자 이름</Th>
-            <Th>순위</Th>
-            <Th>투자 금액</Th>
-            <Th>투자 코멘트</Th>
-            <Th></Th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.length === 0 ? (
-            <Tr>
-              <Td colSpan="5" className="no-investment-message">
-                아직 투자한 기업이 없어요, 버튼을 눌러 기업에 투자해보세요
-              </Td>
-            </Tr>
-          ) : (
-            sortedData.map((investment, index) => (
-              <Tr key={investment.id}>
-                <Td>{investment.investorName}</Td>
-                <Td>{index + 1}위</Td>
-                <Td>{investment.amount.toFixed(0)}억</Td>
-                <Td>{investment.comment}</Td>
-                <Td>
-                  <Dropdown>
-                    <DropdownButton
-                      onClick={() => toggleDropdown(investment.id)}
-                    >
-                      <ArrowIcon src={dropdown} alt="화살표" />
-                    </DropdownButton>
-                    {selectedDropdownId === investment.id && (
-                      <DropdownList>
-                        <DropdownItem
-                          onClick={() => openModal(investment, "update")}
-                        >
-                          수정하기
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => openModal(investment, "delete")}
-                        >
-                          삭제하기
-                        </DropdownItem>
-                      </DropdownList>
-                    )}
-                  </Dropdown>
+      <WrapTable>
+        <Table $mediaSize={mediaSize}>
+          <thead>
+            <tr>
+              <Th>투자자 이름</Th>
+              <Th>순위</Th>
+              <Th>투자 금액</Th>
+              <Th>투자 코멘트</Th>
+              <Th></Th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedData.length === 0 ? (
+              <Tr>
+                <Td colSpan="5" className="no-investment-message">
+                  아직 투자한 기업이 없어요, 버튼을 눌러 기업에 투자해보세요
                 </Td>
               </Tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+            ) : (
+              sortedData.map((investment, index) => (
+                <Tr key={investment.id}>
+                  <Td>{investment.investorName}</Td>
+                  <Td>{index + 1}위</Td>
+                  <Td>{investment.amount.toFixed(0)}억</Td>
+                  <Td>{investment.comment}</Td>
+                  <Td>
+                    <Dropdown>
+                      <DropdownButton
+                        onClick={() => toggleDropdown(investment.id)}
+                      >
+                        <ArrowIcon src={dropdown} alt="화살표" />
+                      </DropdownButton>
+                      {selectedDropdownId === investment.id && (
+                        <DropdownList>
+                          <DropdownItem
+                            onClick={() => openModal(investment, "update")}
+                          >
+                            수정하기
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => openModal(investment, "delete")}
+                          >
+                            삭제하기
+                          </DropdownItem>
+                        </DropdownList>
+                      )}
+                    </Dropdown>
+                  </Td>
+                </Tr>
+              ))
+            )}
+          </tbody>
+        </Table>
+      </WrapTable>
     </>
   );
 }
 
 export default InvestmentTable;
 
+const WrapTable = styled.div`
+  width: 100%;
+  overflow-x: auto;
+`;
+
 const Table = styled.table`
   width: 100%;
+  min-width: 697px;
   border-collapse: collapse;
   background-color: ${black_400};
   color: ${gray_100};
 `;
 
 const Th = styled.th`
-  padding: 12px;
+  /* padding: 12px; */
+  padding-top: 12px;
+  padding-bottom: 12px;
+
   background-color: ${black_100};
   text-align: center;
   font-size: 14px;
@@ -190,18 +205,34 @@ const Td = styled.td`
   &:nth-child(2),
   &:nth-child(3) {
     width: 84px;
+    ${(props) =>
+      props.$mediaSize === "big"
+        ? "84px"
+        : props.$mediaSize === "medium"
+        ? "10%"
+        : "10%"}
     text-align: center;
   }
 
   &:nth-child(4) {
-    width: 884px;
+    width: ${(props) =>
+      props.$mediaSize === "big"
+        ? "884px"
+        : props.$mediaSize === "medium"
+        ? "50%"
+        : "50%"};
     text-align: left;
     font-size: 14px;
     height: 64px;
   }
 
   &:nth-child(5) {
-    width: 64px;
+    width: ${(props) =>
+      props.$mediaSize === "big"
+        ? "64px"
+        : props.$mediaSize === "medium"
+        ? "10%"
+        : "10%"};
   }
 
   &.no-investment-message {

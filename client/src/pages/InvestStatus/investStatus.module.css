@@ -1,0 +1,58 @@
+.content {
+  width: 1200px;
+  padding: 40px 0;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+}
+
+.hbundle {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.tableWrap {
+  margin-bottom: 32px;
+}
+
+/*타블렛 사이즈*/
+@media (min-width: 375px) and (max-width: 1199px) {
+  .hbundle {
+    /* display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px; */
+  }
+
+  .content {
+    /* width: 1200px;
+    padding: 40px 0; */
+    width: 100%;
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-bottom: 163px;
+  }
+}
+
+/*모바일 사이즈 디자인*/
+@media (max-width: 629px) {
+  .tableWrap {
+    overflow-x: auto;
+  }
+
+  .content {
+    /* width: 1200px;
+    padding: 40px 0; */
+    width: 100%;
+    margin-left: 16px;
+    margin-right: 16px;
+    margin-bottom: 159px;
+  }
+}

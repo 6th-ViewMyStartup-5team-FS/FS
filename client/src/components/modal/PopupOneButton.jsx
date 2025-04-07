@@ -1,24 +1,10 @@
-import React, { useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import React from "react";
+import styled from "styled-components";
 import closeIcon from "../../assets/icon/ic_delete.png";
 import BtnDelete from "../BtnDelete";
 import { black_300, black_400 } from "../../styles/colors";
 
-export default function PopupOneButton({ onClose, size = "big", type }) {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const isMobile = windowWidth <= 768;
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    document.body.style.overflow = "hidden"; // 스크롤 막기
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      document.body.style.overflow = "auto";
-    };
-  }, []);
-
+export default function PopupOneButton({ onClose, mediaSize, type }) {
   const getMessage = () => {
     switch (type) {
       case "error":
@@ -41,21 +27,18 @@ export default function PopupOneButton({ onClose, size = "big", type }) {
 
   return (
     <Overlay onClick={onClose}>
-      <Wrapper
-        $size={isMobile ? "small" : size}
-        onClick={(e) => e.stopPropagation()} // 내부 클릭 시 닫힘 방지
-      >
+      <Wrapper $mediaSize={mediaSize} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>
           <img src={closeIcon} alt="닫기" />
         </CloseButton>
 
-        <ContentBox $size={isMobile ? "small" : size}>
-          <Message $size={isMobile ? "small" : size}>{getMessage()}</Message>
+        <ContentBox $mediaSize={mediaSize}>
+          <Message $mediaSize={mediaSize}>{getMessage()}</Message>
 
           <ButtonGroup>
             <BtnDelete
               onClick={onConfirm}
-              size={isMobile ? "small" : size}
+              mediaSize={mediaSize}
               type="confirm"
             />
           </ButtonGroup>
@@ -82,9 +65,9 @@ const Wrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: ${(props) => (props.$size === "small" ? "343px" : "496px")};
-  height: ${(props) => (props.$size === "small" ? "161px" : "186px")};
-  padding: ${(props) => (props.$size === "small" ? "16px" : "24px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "343px" : "496px")};
+  height: ${(props) => (props.$mediaSize === "small" ? "161px" : "186px")};
+  padding: ${(props) => (props.$mediaSize === "small" ? "16px" : "24px")};
   background-color: ${black_300};
   border-radius: 16px;
   color: #ffff;
@@ -109,20 +92,20 @@ const CloseButton = styled.button`
 `;
 
 const ContentBox = styled.div`
-  width: ${(props) => (props.$size === "small" ? "311px" : "448px")};
-  height: ${(props) => (props.$size === "small" ? "129px" : "138px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "311px" : "448px")};
+  height: ${(props) => (props.$mediaSize === "small" ? "129px" : "138px")};
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: ${(props) => (props.$size === "small" ? "16px" : "24px")};
+  gap: ${(props) => (props.$mediaSize === "small" ? "16px" : "24px")};
 `;
 
 const Message = styled.div`
   text-align: center;
   font-family: "Pretendard";
   font-weight: 400;
-  font-size: ${(props) => (props.$size === "small" ? "14px" : "15px")};
+  font-size: ${(props) => (props.$mediaSize === "small" ? "14px" : "15px")};
   line-height: 100%;
   letter-spacing: 0;
   margin-top: 32px;

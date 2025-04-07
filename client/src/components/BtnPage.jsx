@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { black_100, brand_orange } from "../styles/colors";
 
-// 아래 props는 text=1/2/3/4/5 size=big/small isActive=true/false
-function BtnPage({ text, size, isActive }) {
+// 아래 props는 text=1/2/3/4/5 mediaSize=big/small isActive=true/false
+function BtnPage({ text, mediaSize, isActive }) {
   const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = (e) => {
@@ -17,12 +17,13 @@ function BtnPage({ text, size, isActive }) {
 
   useEffect(() => {
     setIsClicked(false);
-    console.log("BtnPage size:", size);
+    console.log("BtnPage mediaSize:", mediaSize);
+
   }, []);
 
   return (
     <Button
-      $size={size}
+      $mediaSize={mediaSize}
       $isClicked={isClicked}
       $isActive={isActive}
       onClick={handleClick}
@@ -44,9 +45,9 @@ const Button = styled.div`
   justify-content: center;
   align-items: center;
 
-  font-size: ${({ $size }) => ($size === "small" ? "16px" : "18px")};
-  width: ${({ $size }) => ($size === "small" ? "32px" : "48px")};
-  height: ${({ $size }) => ($size === "small" ? "32px" : "48px")};
+  font-size: ${({ $mediaSize }) => ($mediaSize === "small" ? "16px" : "18px")};
+  width: ${({ $mediaSize }) => ($mediaSize === "small" ? "32px" : "48px")};
+  height: ${({ $mediaSize }) => ($mediaSize === "small" ? "32px" : "48px")};
 
   transition: background-color 0.2s, color 0.2s;
 `;

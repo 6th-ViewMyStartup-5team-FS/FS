@@ -5,7 +5,7 @@ import BtnLeft from "./BtnLeft";
 import BtnRight from "./BtnRight";
 
 function BtnPagination({
-  size,
+  mediaSize,
   currentPage,
   itemsPerPage,
   totalItems,
@@ -21,7 +21,7 @@ function BtnPagination({
         disabled={currentPage === 1}
         aria-label="Previous page"
       >
-        <BtnLeft size={size} />
+        <BtnLeft mediaSize={mediaSize} />
       </NavButton>
 
       {pageNumbers.map((num) => (
@@ -32,7 +32,7 @@ function BtnPagination({
         >
           <BtnPage
             text={num}
-            size={size}
+            mediaSize={mediaSize}
             isActive={currentPage === num} // 여기에 주목
           />
         </PageButton>
@@ -45,7 +45,7 @@ function BtnPagination({
         disabled={currentPage === totalPages}
         aria-label="Next page"
       >
-        <BtnRight size={size} />
+        <BtnRight mediaSize={mediaSize} />
       </NavButton>
     </Container>
   );

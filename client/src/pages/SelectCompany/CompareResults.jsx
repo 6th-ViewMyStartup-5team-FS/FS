@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import styles from "./CompareResult.module.css";
 import SortDropdown from "../../components/Dropdown";
@@ -9,6 +9,7 @@ import InvestmentModal from "../../components/modal/InvestmentModal";
 import InputField from "../../components/InputField";
 import PopupOneButton from "../../components/modal/PopupOneButton";
 import { fetchComparedCompanies } from "../../api/myCompany";
+import rankingsAPI from "../../api/rankings.api";
 
 function CompareResults() {
   const location = useLocation();
@@ -20,6 +21,7 @@ function CompareResults() {
   const [sortTop, setSortTop] = useState("누적 투자금액 높은순");
   const [sortBottom, setSortBottom] = useState("누적 투자금액 높은순");
   const [companies, setCompanies] = useState([]);
+  const [rankingCompanies, setRankingCompanies] = useState([]);
 
   const navigate = useNavigate();
 
@@ -29,23 +31,24 @@ function CompareResults() {
   const openPopupModal = () => setIsPopupModalAble(true);
 
   const handleSuccess = () => {
-    closeModal();
-    openPopupModal();
+    closeModal(); // 모달 닫고
+    openPopupModal(); // 성공 팝업 열고
     if (selectedCompanyId) {
+      // 선택된 기업 + 비교 기업 데이터 다시 불러오기
       fetchComparedCompanies({ selectedCompanyId, compareCompanyIds })
         .then(setCompanies)
         .catch((err) => console.error("데이터 리로드 실패:", err));
     }
   };
 
-  function updateMediaSize() {
-    const { innerWidth: width } = window;
-    if (width >= 1200) setMediaSize("big");
-    else if (width > 744) setMediaSize("medium");
-    else setMediaSize("small");
-  }
-
+  //반응형 디자인
   useEffect(() => {
+    function updateMediaSize() {
+      const { innerWidth: width } = window;
+      if (width >= 1200) setMediaSize("big");
+      else if (width > 730) setMediaSize("medium");
+      else setMediaSize("small");
+    }
     updateMediaSize();
     window.addEventListener("resize", updateMediaSize);
     return () => window.removeEventListener("resize", updateMediaSize);
@@ -67,6 +70,25 @@ function CompareResults() {
     loadData();
   }, [selectedCompanyId, compareCompanyIds]);
 
+  useEffect(() => {
+    const fetchRankingData = async () => {
+      if (!selectedCompanyId) return;
+      try {
+        const sortBy = getSortKey(sortBottom);
+        const order = getSortOrder(sortBottom);
+        const data = await rankingsAPI.getSurroundingRankings({
+          selectedCompanyId,
+          sortBy,
+          order,
+        });
+        setRankingCompanies(data);
+      } catch (err) {
+        console.error("기업 순위 데이터 불러오기 실패:", err);
+      }
+    };
+    fetchRankingData();
+  }, [selectedCompanyId, sortBottom]);
+
   const sortOptions = [
     "누적 투자금액 높은순",
     "누적 투자금액 낮은순",
@@ -76,30 +98,31 @@ function CompareResults() {
     "고용 인원 적은순",
   ];
 
-  const sortCompanies = (list, criteria) => {
-    const [field, order] = (() => {
-      switch (criteria) {
-        case "누적 투자금액 높은순":
-          return ["investmentAmount", "desc"];
-        case "누적 투자금액 낮은순":
-          return ["investmentAmount", "asc"];
-        case "매출액 높은순":
-          return ["revenue", "desc"];
-        case "매출액 낮은순":
-          return ["revenue", "asc"];
-        case "고용 인원 많은순":
-          return ["employees", "desc"];
-        case "고용 인원 적은순":
-          return ["employees", "asc"];
-        default:
-          return ["investmentAmount", "desc"];
-      }
-    })();
+  const getSortKey = (label) => {
+    switch (label) {
+      case "누적 투자금액 높은순":
+      case "누적 투자금액 낮은순":
+        return "investmentAmount";
+      case "매출액 높은순":
+      case "매출액 낮은순":
+        return "revenue";
+      case "고용 인원 많은순":
+      case "고용 인원 적은순":
+        return "employees";
+      default:
+        return "investmentAmount";
+    }
+  };
 
-    return [...list].sort((a, b) => {
-      const aVal = a[field] ?? 0;
-      const bVal = b[field] ?? 0;
-      console.log(a[field]);
+  const getSortOrder = (label) =>
+    label.includes("낮은순") || label.includes("적은순") ? "asc" : "desc";
+
+  const sortCompanies = (companies, criteria) => {
+    const key = getSortKey(criteria);
+    const order = getSortOrder(criteria);
+    return [...companies].sort((a, b) => {
+      const aVal = a[key] ?? 0;
+      const bVal = b[key] ?? 0;
       return order === "asc" ? aVal - bVal : bVal - aVal;
     });
   };
@@ -115,6 +138,7 @@ function CompareResults() {
 
   const rankColumns = [{ label: "순위", name: "ranking", flex: 1 }, ...columns];
 
+  console.log("mediaSize", mediaSize);
   return (
     <>
       <Wrap>
@@ -123,28 +147,31 @@ function CompareResults() {
             내가 선택한 기업
             <BtnLarge
               type={"orange"}
-              size={"medium"}
+              mediaSize={mediaSize}
               label={"다른 기업 비교하기"}
               onClick={() =>
                 navigate("/select-company", {
                   state: {
                     selectedCompany: companies[0], // 내가 선택한 기업 정보
-                    compareCompanies: [], // 비교 기업 초기화화
+                    compareCompanies: [], // 비교 기업 초기화
+                    preserveOnRefresh: true, // 새로고침 방지용 플래그 추가
                   },
                 })
               }
             />
           </div>
 
-          <InputField>
+          <InputField key={mediaSize} mediaSize={mediaSize}>
             {companies.length > 0 && (
-              <SelectedCompanyBox>
-                <img src={companies[0].imageUrl} alt="로고" />
-                <div>
-                  <div>{companies[0].name}</div>
-                  <div>{companies[0].category}</div>
-                </div>
-              </SelectedCompanyBox>
+              <CenteredWrapper>
+                <SelectedCompanyBox>
+                  <img src={companies[0].imageUrl} alt="로고" />
+                  <div>
+                    <div>{companies[0].name}</div>
+                    <div>{companies[0].category}</div>
+                  </div>
+                </SelectedCompanyBox>
+              </CenteredWrapper>
             )}
           </InputField>
 
@@ -153,21 +180,25 @@ function CompareResults() {
           <div className={styles.content2}>
             비교 결과 확인하기
             <SortDropdown
-              size={mediaSize}
+              mediaSize={mediaSize}
               options={sortOptions}
               value={sortTop}
               onChange={setSortTop}
             />
           </div>
 
-          <StyledTable className={styles.table1}>
-            <thead>
-              <TableHeader columns={columns} />
-            </thead>
-            <tbody>
-              {sortCompanies(companies, sortTop).map((company) => (
-                <tr key={company.id}>
-                  <Link to={`/company-detail/${company.id}`}>
+          <StyledTableWrapper>
+            <StyledTable1>
+              <thead>
+                <TableHeader columns={columns} />
+              </thead>
+              <tbody>
+                {sortCompanies(companies, sortTop).map((company) => (
+                  <tr
+                    key={company.id}
+                    onClick={() => navigate(`/company-detail/${company.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <CompanyCell>
                       <img
                         src={company.imageUrl}
@@ -175,42 +206,42 @@ function CompareResults() {
                       />
                       <span>{company.name}</span>
                     </CompanyCell>
-                  </Link>
-                  <LeftAlignTD>{company.description}</LeftAlignTD>
-                  <TD>{company.category}</TD>
-                  <TD>
-                    {typeof company.investmentAmount === "number"
-                      ? `${company.investmentAmount.toLocaleString()}억 원`
-                      : "-"}
-                  </TD>
-                  <TD>{company.revenue}억 원</TD>
-                  <TD>{company.employees}명</TD>
-                </tr>
-              ))}
-            </tbody>
-          </StyledTable>
+                    <LeftAlignTD>{company.description}</LeftAlignTD>
+                    <TD>{company.category}</TD>
+                    <TD>{company.investmentAmount?.toLocaleString()}억 원</TD>
+                    <TD>{company.revenue}억 원</TD>
+                    <TD>{company.employees}명</TD>
+                  </tr>
+                ))}
+              </tbody>
+            </StyledTable1>
+          </StyledTableWrapper>
 
           <SpacerSmall />
 
           <div className={styles.content3}>
             기업 순위 확인하기
             <SortDropdown
-              size={mediaSize}
+              mediaSize={mediaSize}
               options={sortOptions}
               value={sortBottom}
               onChange={setSortBottom}
             />
           </div>
 
-          <StyledTable className={styles.table2}>
-            <thead>
-              <TableHeader columns={rankColumns} />
-            </thead>
-            <tbody>
-              {sortCompanies(companies, sortBottom).map((company, idx) => (
-                <tr key={company.id}>
-                  <TD>{idx + 1}위</TD>
-                  <Link to={`/company-detail/${company.id}`}>
+          <StyledTableWrapper>
+            <StyledTable2>
+              <thead>
+                <TableHeader columns={rankColumns} />
+              </thead>
+              <tbody>
+                {rankingCompanies.map((company) => (
+                  <tr
+                    key={company.id}
+                    onClick={() => navigate(`/company-detail/${company.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <TD>{company.ranking}위</TD>
                     <CompanyCell>
                       <img
                         src={company.imageUrl}
@@ -218,34 +249,32 @@ function CompareResults() {
                       />
                       <span>{company.name}</span>
                     </CompanyCell>
-                  </Link>
-                  <LeftAlignTD>{company.description}</LeftAlignTD>
-                  <TD>{company.category}</TD>
-                  <TD>
-                    {typeof company.investmentAmount === "number"
-                      ? `${company.investmentAmount.toLocaleString()}억원`
-                      : "-"}
-                  </TD>
-                  <TD>{company.revenue}억원</TD>
-                  <TD>{company.employees}명</TD>
-                </tr>
-              ))}
-            </tbody>
-          </StyledTable>
+                    <LeftAlignTD>{company.description}</LeftAlignTD>
+                    <TD>{company.category}</TD>
+                    <TD>{company.investmentAmount?.toLocaleString()}억 원</TD>
+                    <TD>{company.revenue}억 원</TD>
+                    <TD>{company.employees}명</TD>
+                  </tr>
+                ))}
+              </tbody>
+            </StyledTable2>
+          </StyledTableWrapper>
 
           <Spacer />
-          <BtnLarge
-            type={"orange"}
-            size={mediaSize}
-            label={"나의 기업에 투자하기"}
-            onClick={openModal}
-          />
+          <BtnWrapper>
+            <BtnLarge
+              type={"orange"}
+              mediaSize="big"
+              label={"나의 기업에 투자하기"}
+              onClick={openModal}
+            />
+          </BtnWrapper>
 
           {isModalOpen && (
             <InvestmentModal
               onClose={closeModal}
-              onSuccess={handleSuccess} // 추가!
-              size={mediaSize}
+              onSuccess={handleSuccess} // 성공 후 처리 로직
+              mediaSize={mediaSize}
               openPopupModal={openPopupModal}
               company={companies[0]} // "내가 선택한 기업" 정보 넘기기
             />
@@ -255,7 +284,7 @@ function CompareResults() {
         {isPopupModalOpen && (
           <PopupOneButton
             onClose={closePopupModal}
-            size={mediaSize}
+            mediaSize={mediaSize}
             type={"success"}
           />
         )}
@@ -293,14 +322,17 @@ const SelectedCompanyBox = styled.div`
   }
 `;
 
-const StyledTable = styled.table`
+const CenteredWrapper = styled.div`
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 16px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-  thead tr {
-    border-bottom: 16px solid #131313;
-  }
+const StyledTableWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto;
 `;
 
 const TD = styled.td`
@@ -310,6 +342,47 @@ const TD = styled.td`
   background-color: #212121;
   color: #d8d8d8;
   text-align: center;
+  word-break: keep-all;
+`;
+
+const StyledTable1 = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 696px;
+
+  thead tr {
+    border-bottom: 16px solid #131313;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  @media (max-width: 730px) {
+    min-width: 576px;
+  }
+`;
+
+const StyledTable2 = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 768px;
+
+  thead tr {
+    border-bottom: 16px solid #131313;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  @media (max-width: 730px) {
+    min-width: 656px;
+  }
 `;
 
 const LeftAlignTD = styled.td`
@@ -350,4 +423,10 @@ const CompanyCell = styled.td`
   span {
     white-space: nowrap;
   }
+`;
+const BtnWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 32px;
 `;

@@ -5,9 +5,7 @@ const Exception = require("../exceptions");
 const rankingsRouter = express.Router();
 
 /**
- * GET /api/rankings
- * 전체 기업 랭킹 조회 API (기존)
- * 쿼리: ?sortBy=investmentAmount&order=desc
+ * 전체 기업 랭킹 조회
  */
 rankingsRouter.get("/", async (req, res, next) => {
   try {
@@ -52,7 +50,6 @@ rankingsRouter.get("/", async (req, res, next) => {
 });
 
 /**
- * GET /api/rankings/surrounding
  * 선택된 기업 기준으로 최대 5개 기업 조회 API
  */
 rankingsRouter.get("/surrounding", async (req, res, next) => {

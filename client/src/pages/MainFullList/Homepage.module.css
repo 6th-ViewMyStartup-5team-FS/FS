@@ -9,13 +9,15 @@ body {
 }
 
 .content {
-  padding: 32px;
+  padding-top: 40px;
+  padding-bottom: 133px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .head {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
@@ -32,11 +34,12 @@ body {
 
 .controls {
   display: flex;
+  flex-direction: row;
   gap: 16px;
   flex-wrap: wrap;
   align-items: center;
 }
-
+/* 
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -69,15 +72,53 @@ body {
 
 .pagination {
   align-items: center;
-}
+} */
 
 /*타블렛 사이즈*/
-@media (min-width: 376px) and (max-width: 1199px) {
+@media (min-width: 630px) and (max-width: 1199px) {
+  .head {
+    justify-content: space-between;
+    margin-bottom: 16px;
+    width: 100%;
+
+    box-sizing: content-box;
+    padding: 0;
+  }
+
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+  }
+
   .content {
     padding: 40px 24px 83px 24px;
   }
 }
 
-/*모바일 사이즈*/
-@media (max-width: 375px) {
+/*모바일 사이즈 디자인*/
+@media (max-width: 629px) {
+  .head {
+    flex-direction: column;
+    align-items: baseline;
+    padding: 0;
+    gap: 16px;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+
+    /* gap: 0; */
+    width: 100%;
+    /* justify-content: space-between; */
+  }
+
+  /* 모바일 화면에서 데이터가 작아지지 않고 가로 스크롤이 생기도록 함 */
+  .record {
+    overflow-x: auto;
+  }
 }

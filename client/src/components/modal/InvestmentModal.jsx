@@ -6,8 +6,9 @@ import { black_300, black_400, gray_200, gray_300 } from "../../styles/colors";
 import { useParams } from "react-router-dom";
 import companyAPI from "../../api/company.api";
 import investmentAPI from "../../api/investment.api";
+import closeIcon from "../../assets/icon/ic_delete.png";
 
-const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
+const InvestmentModal = ({ onClose, mediaSize, onSuccess, company }) => {
   //각 input들의 value를 state로 저장해둠
   const [inputValueName, setInputValueName] = useState("");
   const [inputValueAmount, setInputValueAmount] = useState("");
@@ -93,10 +94,12 @@ const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
 
   return (
     <Overlay onClick={onClose}>
-      <ModalWrapper $size={size} onClick={(e) => e.stopPropagation()}>
+      <ModalWrapper $mediaSize={mediaSize} onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <Title>기업에 투자하기</Title>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton>
+            <img onClick={onClose} src={closeIcon} alt="닫기" />
+          </CloseButton>
         </ModalHeader>
 
         <Section>
@@ -117,7 +120,7 @@ const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
           <FieldGroup>
             <FieldLabel>투자자 이름</FieldLabel>
             <TextInputField
-              size={size}
+              mediaSize={mediaSize}
               placeholder="투자자 이름을 입력해 주세요"
               value={inputValueName}
               onChange={handleNameChange}
@@ -127,7 +130,7 @@ const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
           <FieldGroup>
             <FieldLabel>투자 금액</FieldLabel>
             <TextInputField
-              size={size}
+              mediaSize={mediaSize}
               placeholder="투자 금액을 입력해 주세요"
               value={inputValueAmount}
               onChange={handleAmountChange}
@@ -137,7 +140,7 @@ const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
           <FieldGroup>
             <FieldLabel>투자 코멘트</FieldLabel>
             <TextInputField
-              size={size}
+              mediaSize={mediaSize}
               state="normal"
               placeholder="투자에 대한 코멘트를 입력해 주세요"
               value={inputValueComment}
@@ -148,7 +151,7 @@ const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
           <FieldGroup>
             <FieldLabel>비밀번호</FieldLabel>
             <PasswordInputField
-              size={size}
+              mediaSize={mediaSize}
               placeholder="비밀번호를 입력해주세요"
               value={inputValuePassword}
               onChange={handlePasswordChange}
@@ -158,7 +161,7 @@ const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
           <FieldGroup>
             <FieldLabel>비밀번호 확인</FieldLabel>
             <PasswordInputField
-              size={size}
+              mediaSize={mediaSize}
               placeholder="비밀번호를 다시 한 번 입력해주세요"
               value={inputValueCheckPassword}
               onChange={handleCheckPasswordChange}
@@ -167,10 +170,15 @@ const InvestmentModal = ({ onClose, size, onSuccess, company }) => {
         </Section>
 
         <ButtonRow>
-          <BtnLarge type="" size={size} label="취소" onClick={onClose} />
+          <BtnLarge
+            type=""
+            mediaSize={mediaSize}
+            label="취소"
+            onClick={onClose}
+          />
           <BtnLarge
             type="orange"
-            size={size}
+            mediaSize={mediaSize}
             label="투자하기"
             onClick={handleClickInvestmentButton}
             disabled={!isInvestButtonAvailable}
@@ -191,16 +199,16 @@ const Overlay = styled.div`
   bottom: 0;
   display: flex;
   justify-content: center;
+  background-color: ${black_400}80;
   align-items: center;
 `;
 
 const ModalWrapper = styled.div`
   box-sizing: border-box;
   background: ${black_300};
-  padding: 24px;
+  padding: 20px;
   border-radius: 16px;
-  width: ${(props) => (props.$size === "small" ? "343px" : "496px")};
-  height: auto;
+  width: ${(props) => (props.$mediaSize === "small" ? "343px" : "496px")};
   z-index: 999;
 `;
 
@@ -218,81 +226,83 @@ const Title = styled.h2`
 const CloseButton = styled.button`
   background: none;
   border: none;
-  font-size: 24px;
-  color: #fff;
   cursor: pointer;
 `;
 
 const Section = styled.div`
-  margin-top: 24px;
+  margin-top: 15px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 10px;
 `;
 
 const SectionTitle = styled.h3`
-  font-size: 16px;
-  color: #ccc;
+  font-size: 18px;
+  color: #fff;
   margin: 0 0 6px 0;
 `;
 
 const FieldGroup = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 10px;
 `;
 
 const FieldLabel = styled.h3`
   font-size: 18px;
-  color: #ccc;
+  color: #fff;
   margin: 0 0 6px 0;
 `;
 
 const CompanyInfo = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
+  margin-bottom: 15px;
 `;
 
 const Logo = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
 `;
 
 const CompanyText = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 12px;
 `;
 
-const CompanyName = styled.span`
-  font-weight: bold;
+const CompanyName = styled.div`
+  font-size: 16px;
   color: #fff;
 `;
 
-const CompanyCategory = styled.span`
+const CompanyCategory = styled.div`
+  padding-top: 3px;
   font-size: 12px;
   color: #aaa;
 `;
 
-const TextArea = styled.textarea`
-  width: 90%;
-  background-color: ${gray_300};
-  color: #fff;
-  border: 2px solid ${gray_300};
-  border-radius: 8px;
-  padding: 14px;
-  font-size: 16px;
-  resize: none;
-  outline: none;
+// const TextArea = styled.textarea`
+//   width: 90%;
+//   background-color: ${gray_300};
+//   color: #fff;
+//   border: 2px solid ${gray_300};
+//   border-radius: 8px;
+//   padding: 14px;
+//   font-size: 16px;
+//   resize: none;
+//   outline: none;
 
-  &::placeholder {
-    color: ${gray_200};
-  }
+//   &::placeholder {
+//     color: ${gray_200};
+//   }
 
-  &:focus {
-    border-color: #3692ff;
-  }
-`;
+//   &:focus {
+//     border-color: #3692ff;
+//   }
+// `;
 
 const ButtonRow = styled.div`
   margin-top: 24px;

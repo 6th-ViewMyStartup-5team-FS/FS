@@ -22,15 +22,28 @@ function HomePage() {
   });
 
   //table row 항목
-  const columns = [
-    { label: "순위", name: "ranking", width: "6%" },
-    { label: "기업명", name: "name", width: "12%" },
-    { label: "기업 소개", name: "description", width: "30%" },
+  let columns = [
+    { label: "순위", name: "ranking", width: "5%" },
+    { label: "기업명", name: "name", width: "18%" },
+    { label: "기업 소개", name: "description", width: "27%" },
     { label: "카테고리", name: "category", width: "12%" },
-    { label: "누적 투자 금액", name: "investmentAmount", width: "20%" },
-    { label: "매출액", name: "revenue", width: "10%" },
-    { label: "고용 인원", name: "employees", width: "10%" },
+    { label: "누적 투자 금액", name: "investmentAmount", width: "12%" },
+    { label: "매출액", name: "revenue", width: "12%" },
+    { label: "고용 인원", name: "employees", width: "12%" },
   ];
+
+  //반응형/테블릿 사이즈에선 "순위" 컬럼 제외
+  //big 일때는 일부러 조건문 안함.
+  if (mediaSize === "medium" || mediaSize === "small") {
+    columns = [
+      { label: "기업명", name: "name", width: "16%" },
+      { label: "기업 소개", name: "description", width: "32%" },
+      { label: "카테고리", name: "category", width: "12%" },
+      { label: "누적 투자 금액", name: "investmentAmount", width: "14%" },
+      { label: "매출액", name: "revenue", width: "12%" },
+      { label: "고용 인원", name: "employees", width: "14%" },
+    ];
+  }
 
   //dropdown 항목
   const sortOptions = [
@@ -47,7 +60,7 @@ function HomePage() {
     function updateMediaSize() {
       const { innerWidth: width } = window;
       if (width >= 1200) setMediaSize("big");
-      else if (width > 375) setMediaSize("medium");
+      else if (width > 730) setMediaSize("medium");
       else setMediaSize("small");
     }
     updateMediaSize();
@@ -125,6 +138,9 @@ function HomePage() {
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = sortedData.slice(startIndex, endIndex);
 
+  //디버깅
+  console.log("media size: " + mediaSize);
+
   return (
     <Wrap>
       <div className={styles.container}>
@@ -134,7 +150,7 @@ function HomePage() {
 
             <div className={styles.controls}>
               <Search
-                size={mediaSize}
+                mediaSize={mediaSize}
                 state={"searching"}
                 value={searchKeyword}
                 onChange={handleSearchChange}
@@ -142,7 +158,7 @@ function HomePage() {
                 onSearch={(tokens) => setSearchTokens(tokens)}
               />
               <SortDropdown
-                size={mediaSize}
+                mediaSize={mediaSize}
                 options={sortOptions}
                 value={selectedSort}
                 onChange={handleSortChange}
@@ -150,60 +166,70 @@ function HomePage() {
             </div>
           </div>
 
-          <StyledTable>
-            <thead>
-              <HeaderRow>
-                {columns.map(({ label, name, width }, i) => (
-                  <Th key={name || i} style={{ width }}>
-                    {label}
-                  </Th>
-                ))}
-              </HeaderRow>
-            </thead>
-            <tbody>
-              {paginatedData.length > 0 ? (
-                paginatedData.map((item, index) => (
-                  <tr key={item.id || index}>
-                    <TD>{startIndex + index + 1}위</TD>
-                    <TD>
-                      <CompanyCell>
-                        <Logo src={item.imageUrl} alt={`${item.name} 로고`} />
+          <div className={styles.record}>
+            <StyledTable>
+              <thead>
+                <HeaderRow>
+                  {columns.map(({ label, name, width }, i) => {
+                    return (
+                      <Th key={name || i} style={{ width }}>
+                        {label}
+                      </Th>
+                    );
+                  })}
+                </HeaderRow>
+              </thead>
+              <tbody>
+                {paginatedData.length > 0 ? (
+                  paginatedData.map((item, index) => (
+                    <tr key={item.id || index}>
+                      {columns.map((column, index) => {
+                        if (column.name === "ranking") {
+                          return <TD>{startIndex + index + 1}위</TD>;
+                        }
+                      })}
+                      <TD>
+                        <CompanyCell mediaSize={mediaSize}>
+                          <Logo src={item.imageUrl} alt={`${item.name} 로고`} />
+                          <Link to={`/company-detail/${item.id}`}>
+                            {item.name}
+                          </Link>
+                        </CompanyCell>
+                      </TD>
+                      <Td>
                         <Link to={`/company-detail/${item.id}`}>
-                          {item.name}
+                          {item.description}
                         </Link>
-                      </CompanyCell>
+                      </Td>
+                      <TD>{item.category}</TD>
+                      <TD>
+                        {item.realInvestmentAmount?.toLocaleString()}억 원
+                      </TD>
+                      <TD>{item.revenue?.toLocaleString()}억 원</TD>
+                      <TD>{item.numberOfEmployees?.toLocaleString()}명</TD>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <TD
+                      colSpan={columns.length}
+                      style={{
+                        textAlign: "center",
+                        padding: "40px 0",
+                        color: "#888",
+                      }}
+                    >
+                      표시할 스타트업 데이터가 없습니다.
                     </TD>
-                    <TD>
-                      <Link to={`/company-detail/${item.id}`}>
-                        {item.description}
-                      </Link>
-                    </TD>
-                    <TD>{item.category}</TD>
-                    <TD>{item.realInvestmentAmount?.toLocaleString()}억 원</TD>
-                    <TD>{item.revenue?.toLocaleString()}억 원</TD>
-                    <TD>{item.numberOfEmployees?.toLocaleString()}명</TD>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <TD
-                    colSpan={columns.length}
-                    style={{
-                      textAlign: "center",
-                      padding: "40px 0",
-                      color: "#888",
-                    }}
-                  >
-                    표시할 스타트업 데이터가 없습니다.
-                  </TD>
-                </tr>
-              )}
-            </tbody>
-          </StyledTable>
+                )}
+              </tbody>
+            </StyledTable>
+          </div>
 
           <PaginationWrap>
             <BtnPagination
-              size={mediaSize}
+              mediaSize={mediaSize}
               currentPage={currentPage}
               itemsPerPage={itemsPerPage}
               totalItems={sortedData.length}
@@ -227,15 +253,20 @@ const Wrap = styled.div`
 
 const StyledTable = styled.table`
   width: 100%;
+  min-width: 696px;
   border-collapse: collapse;
 `;
 
 const HeaderRow = styled.tr`
   border-bottom: 16px solid #131313;
+  width: 696px;
+  font-size: 14px;
 `;
 
 const Th = styled.th`
-  padding: 12px 16px;
+  padding: 0;
+  padding-top: 11px;
+  padding-bottom: 11px;
   font-size: 14px;
   font-weight: 600;
   color: white;
@@ -245,13 +276,39 @@ const Th = styled.th`
 `;
 
 const TD = styled.td`
-  padding: 20px 16px;
+  /* padding: 20px 16px; */
+  padding-top: 20px;
+  padding-bottom: 20px;
   font-size: 14px;
   text-align: center;
   border-bottom: 1px solid #333;
   background-color: #212121;
   color: #d8d8d8;
   font-family: "Pretendard", sans-serif;
+  word-break: keep-all;
+  width: 696px;
+`;
+
+const Td = styled.td`
+  /* padding: 20px 16px; */
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 10px;
+  font-size: 14px;
+  width: 100;
+  text-align: start;
+  border-bottom: 1px solid #333;
+  background-color: #212121;
+  color: #d8d8d8;
+  font-family: "Pretendard", sans-serif;
+  word-break: break-word;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+  text-overflow: ellipsis; /* 넘어가는 텍스트는 '...'으로 표시 */
 `;
 
 const PaginationWrap = styled.div`
@@ -262,6 +319,13 @@ const PaginationWrap = styled.div`
 
 const CompanyCell = styled.div`
   display: flex;
+  justify-content: baseline;
+  padding-left: ${(props) =>
+    props.mediaSize === "big"
+      ? "24px"
+      : props.mediaSize === "medium" || props.mediaSize === "small"
+      ? "16px"
+      : null};
   align-items: center;
   gap: 8px;
 `;

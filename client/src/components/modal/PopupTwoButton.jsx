@@ -5,7 +5,7 @@ import BtnDelete from "../BtnDelete";
 import BtnLarge from "../BtnLarge";
 import { black_300, black_400 } from "../../styles/colors";
 
-export default function PopupTwoButton({ onConfirm, onCancel, size = "big" }) {
+export default function PopupTwoButton({ onConfirm, onCancel, mediaSize }) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isMobile = windowWidth <= 768;
 
@@ -20,11 +20,11 @@ export default function PopupTwoButton({ onConfirm, onCancel, size = "big" }) {
     };
   }, []);
 
-  const currentSize = isMobile ? "small" : size;
+  const currentSize = isMobile ? "small" : mediaSize;
 
   return (
     <Overlay onClick={onCancel}>
-      <Wrapper $size={currentSize} onClick={(e) => e.stopPropagation()}>
+      <Wrapper $mediaSize={currentSize} onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onCancel}>
           <img src={closeIcon} alt="닫기" />
         </CloseButton>
@@ -34,11 +34,15 @@ export default function PopupTwoButton({ onConfirm, onCancel, size = "big" }) {
         <ButtonGroup>
           <BtnLarge
             type=""
-            size={currentSize}
+            mediaSize={currentSize}
             label="취소"
             onClick={onCancel}
           />
-          <BtnDelete onClick={onConfirm} size={currentSize} type="confirm" />
+          <BtnDelete
+            onClick={onConfirm}
+            mediaSize={currentSize}
+            type="confirm"
+          />
         </ButtonGroup>
       </Wrapper>
     </Overlay>
@@ -74,8 +78,8 @@ const Wrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: ${(props) => (props.$size === "small" ? "343px" : "496px")};
-  padding: ${(props) => (props.$size === "small" ? "20px 16px" : "24px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "343px" : "496px")};
+  padding: ${(props) => (props.$mediaSize === "small" ? "20px 16px" : "24px")};
   background-color: ${black_300};
   border-radius: 16px;
   color: #ffff;

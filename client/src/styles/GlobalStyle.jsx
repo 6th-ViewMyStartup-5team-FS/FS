@@ -31,7 +31,7 @@ const GlobalStyle = createGlobalStyle`
       width: 100%;
       font-family: "Pretendard";
       letter-spacing: 1px;
-      font-size: 1.6rem;
+      /* font-size: 1.6rem; */
   }
 
   ul,

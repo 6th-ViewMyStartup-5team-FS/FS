@@ -8,9 +8,10 @@ import { black_300, black_400 } from "../../styles/colors";
 export default function ModalPassword({
   onClose,
   onDelete,
-  size = "big",
+  mediaSize,
   isUpdateMode,
 }) {
+  console.log("ModalPassword - mediaSize:", mediaSize);
   const [password, setPassword] = useState("");
   const [isTouched, setIsTouched] = useState(false);
 
@@ -33,7 +34,7 @@ export default function ModalPassword({
   return (
     <Overlay onClick={onClose}>
       <Wrapper
-        $size={size}
+        $mediaSize={mediaSize}
         onClick={(e) => e.stopPropagation()} // 내부 클릭 시 닫힘 방지
       >
         <Header>
@@ -46,7 +47,7 @@ export default function ModalPassword({
         <Label>비밀번호</Label>
 
         <PasswordInputField
-          size={size}
+          mediaSize={mediaSize}
           placeholder="패스워드를 입력해주세요"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -56,7 +57,7 @@ export default function ModalPassword({
         <BtnDeleteWrapper>
           <BtnDelete
             onClick={handleSubmit}
-            size={size}
+            mediaSize={mediaSize}
             type={isUpdateMode ? "update" : "delete"}
           />
         </BtnDeleteWrapper>
@@ -84,12 +85,12 @@ const Wrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: ${(props) => (props.$size === "small" ? "343px" : "496px")};
-  height: ${(props) => (props.$size === "small" ? "235px" : "269px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "343px" : "496px")};
+  height: ${(props) => (props.$mediaSize === "small" ? "235px" : "269px")};
 
   background-color: ${black_300};
   border-radius: 16px;
-  padding: ${(props) => (props.$size === "small" ? "16px" : "24px")};
+  padding: ${(props) => (props.$mediaSize === "small" ? "16px" : "24px")};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

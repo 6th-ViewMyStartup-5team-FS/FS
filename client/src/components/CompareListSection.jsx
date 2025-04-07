@@ -18,17 +18,19 @@ const CompareListSection = ({
         : window.innerWidth > 744
         ? "medium"
         : "small"
-      : "medium";
+      : "big";
 
   const renderSelectedCompanies = () => {
     if (!companies) return null;
     return (
       <InputField variant="default" mediaSize={mediaSize}>
         {companies.length === 0 ? (
-          <EmptyText>
-            아직 추가한 기업이 없어요. <br />
-            버튼을 눌러 기업을 추가해보세요!
-          </EmptyText>
+          <EmptyContainer>
+            <EmptyText>
+              아직 추가한 기업이 없어요. <br />
+              버튼을 눌러 기업을 추가해보세요!
+            </EmptyText>
+          </EmptyContainer>
         ) : (
           <CardGrid>
             {companies.map((company) => (
@@ -55,13 +57,13 @@ const CompareListSection = ({
     <Wrapper $mediaSize={mediaSize}>
       {isActive && (
         <Header $mediaSize={mediaSize}>
-          <Title>
+          <Title $mediaSize={mediaSize}>
             어떤 기업이 궁금하세요? {companies.length > 0 && " (최대 5개)"}
           </Title>
           <BtnLarge
             label="기업 추가하기"
             type={companies.length >= 5 ? "black" : "orange"}
-            size="small"
+            mediaSize="small"
             onClick={() => {
               if (companies.length >= 5) return;
               onAddClick();
@@ -78,22 +80,21 @@ const CompareListSection = ({
 export default CompareListSection;
 
 const Wrapper = styled.section`
+  box-sizing: border-box;
   color: white;
 `;
 
 const Header = styled.div`
   display: flex;
-  flex-direction: ${({ $mediaSize }) =>
-    $mediaSize === "small" ? "column" : "row"};
+  flex-direction: row;
   justify-content: space-between;
-  align-items: ${({ $mediaSize }) =>
-    $mediaSize === "small" ? "flex-start" : "center"};
+  align-items: center;
   gap: 12px;
   margin-bottom: 16px;
 `;
 
 const Title = styled.h2`
-  font-size: 20px;
+  font-size: ${({ $mediaSize }) => ($mediaSize === "small" ? "16px" : "20px")};
 `;
 
 const CardContainer = styled.div`
@@ -101,6 +102,14 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+`;
+
+const EmptyContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const EmptyText = styled.p`
@@ -113,8 +122,12 @@ const EmptyText = styled.p`
 const CardGrid = styled.div`
   display: flex;
   gap: 12px;
+  width: 100%;
+  height: 100%;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: ${({ $mediaSize }) =>
+    $mediaSize === "small" ? "flex-start" : "center"};
+  align-content: center;
 `;
 
 const CompanyCard = styled.div`

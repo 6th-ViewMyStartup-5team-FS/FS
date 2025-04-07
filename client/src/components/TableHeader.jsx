@@ -15,7 +15,8 @@ export default function TableHeader({ columns = [] }) {
 }
 
 const Th = styled.th`
-  padding: 12px 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   font-size: 14px;
   font-weight: 600;
   color: white;

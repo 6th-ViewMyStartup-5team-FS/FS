@@ -3,7 +3,7 @@ import styled, { css, keyframes } from "styled-components";
 import arrowDown from "../assets/images/dropdownarrow/arrow.svg";
 import { black_400, gray_200 } from "../styles/colors";
 
-function SortDropdown({ size, options = [], value, onChange }) {
+function SortDropdown({ mediaSize, options = [], value, onChange }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -25,7 +25,7 @@ function SortDropdown({ size, options = [], value, onChange }) {
 
   return (
     <Wrapper ref={dropdownRef}>
-      <DropdownButton $size={size} onClick={toggleDropdown}>
+      <DropdownButton $mediaSize={mediaSize} onClick={toggleDropdown}>
         <SelectedText>{value}</SelectedText>
         <ArrowIcon src={arrowDown} alt="화살표" $isOpen={open} />
       </DropdownButton>
@@ -60,12 +60,36 @@ const DropdownButton = styled.button`
   background-color: ${black_400};
   color: #fff;
   border: 1px solid ${gray_200};
-  border-radius: 14px;
-  width: ${(props) => (props.$size === "big" ? "280px" : "240px")};
-  height: ${(props) => (props.$size === "big" ? "44px" : "39px")};
-  padding: 0 16px;
+  border-radius: 10px;
+  width: ${(props) =>
+    props.$mediaSize === "big"
+      ? "268px" //투자 현황쪽의 VMS 드롭다운바를 기준으로 설정.
+      : props.$mediaSize === "medium"
+      ? "268px" //투자 현황쪽의 VMS 드롭다운바를 기준으로 설정.
+      : props.$mediaSize === "small"
+      ? "241px"
+      : null};
+  height: ${(props) =>
+    props.$mediaSize === "big"
+      ? "48px"
+      : props.$mediaSize === "medium"
+      ? "48px"
+      : props.$mediaSize === "small"
+      ? "40px"
+      : null};
+  padding: ${(props) =>
+    props.$mediaSize === "big" || props.$mediaSize === "medium"
+      ? "15px"
+      : props.$mediaSize === "small"
+      ? "12px"
+      : null};
 
-  font-size: ${(props) => (props.$size === "big" ? "14px" : "12px")};
+  font-size: ${(props) =>
+    props.$mediaSize === "big" || props.$mediaSize === "medium"
+      ? "14px"
+      : props.$mediaSize === "small"
+      ? "12px"
+      : null};
   cursor: pointer;
 `;
 
@@ -103,7 +127,7 @@ const DropdownList = styled.div`
   background-color: ${black_400};
 
   border: 1px solid ${gray_200};
-  border-radius: 14px;
+  border-radius: 10px;
   overflow: hidden;
   z-index: 1000;
 
@@ -123,11 +147,11 @@ const DropdownItem = styled.button`
   justify-content: center;
   width: 100%;
   text-align: left;
-  padding: 10px 16px;
+  padding: 14px 16px;
   color: #fff;
   background-color: ${(props) => (props.$isSelected ? "#212121" : black_400)};
   border: none;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   border-bottom: 1px solid ${gray_200};
 

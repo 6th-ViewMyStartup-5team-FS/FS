@@ -5,10 +5,10 @@ import smallCheck from "../assets/images/btnOutline/smallCheck.png";
 import { black_100, brand_orange, gray_100, gray_200 } from "../styles/colors";
 
 {
-  /* 아래 props는 text=choice/complete/cancel type=black/orange/none size=big/small src=exixtBig/existSmall/"" */
+  /* 아래 props는 text=choice/complete/cancel type=black/orange/none mediaSize=big/small src=exixtBig/existSmall/"" */
 }
 
-function BtnOutline({ text, type, size, src, onClick }) {
+function BtnOutline({ text, type, mediaSize, src, onClick }) {
   const imageSrc =
     src === "existBig" ? bigCheck : src === "existSmall" ? smallCheck : null;
 
@@ -22,9 +22,9 @@ function BtnOutline({ text, type, size, src, onClick }) {
       : null;
 
   return (
-    <Container $type={type} $size={size} onClick={onClick}>
+    <Container $type={type} $mediaSize={mediaSize} onClick={onClick}>
       <Img src={imageSrc}></Img>
-      <Text $size={size}>{innerText}</Text>
+      <Text $mediaSize={mediaSize}>{innerText}</Text>
     </Container>
   );
 }
@@ -56,12 +56,12 @@ const Container = styled.div`
   }};
 
   width: ${(props) => {
-    if (props.$size === "big") return "104px";
-    if (props.$size === "small") return "73px";
+    if (props.$mediaSize === "big") return "104px";
+    if (props.$mediaSize === "small") return "73px";
   }};
   height: ${(props) => {
-    if (props.$size === "big") return "48px";
-    if (props.$size === "small") return "32px";
+    if (props.$mediaSize === "big") return "48px";
+    if (props.$mediaSize === "small") return "32px";
   }};
 `;
 
@@ -71,12 +71,12 @@ const Img = styled.img`
 
 const Text = styled.div`
   padding: ${(props) => {
-    if (props.$size === "big") return "13px, 48px, 13px, 48px";
-    if (props.$size === "small") return "13px, 24px, 13px, 24px";
+    if (props.$mediaSize === "big") return "13px, 48px, 13px, 48px";
+    if (props.$mediaSize === "small") return "13px, 24px, 13px, 24px";
   }};
   font-size: ${(props) => {
-    if (props.$size === "big") return "16px";
-    if (props.$size === "small") return "14px";
+    if (props.$mediaSize === "big") return "16px";
+    if (props.$mediaSize === "small") return "14px";
   }};
 `;
 

@@ -30,7 +30,7 @@ const Container = styled.div`
     $mediaSize === "big"
       ? "384px"
       : $mediaSize === "medium"
-      ? "216px"
+      ? "30%"
       : $mediaSize === "small"
       ? "103px"
       : null};
@@ -51,6 +51,7 @@ const Char = styled.span`
   ${media.mobile`
     font-size: 14px;
   `}
+  word-break: keep-all;
 `;
 
 const Number = styled.span`

@@ -5,11 +5,18 @@ import searchImg from "../assets/images/search/lenz.png";
 import xImg from "../assets/images/search/x.png";
 import { black_300, gray_200, gray_100 } from "../styles/colors";
 
-function Search({ size, state = "none", value, onChange, onClear, onSearch }) {
+function Search({
+  mediaSize,
+  state = "none",
+  value,
+  onChange,
+  onClear,
+  onSearch,
+}) {
   const [placeholder, setPlaceholder] = useState(
     state === "searching"
       ? "기업 검색하기"
-      : size === "small"
+      : mediaSize === "small"
       ? "검색"
       : "검색어를 입력해주세요"
   );
@@ -60,11 +67,11 @@ function Search({ size, state = "none", value, onChange, onClear, onSearch }) {
   };
 
   return (
-    <Container $size={size}>
+    <Container $mediaSize={mediaSize}>
       {state === "searching" ? (
         <>
           <Input
-            $size={size}
+            $mediaSize={mediaSize}
             value={value}
             onChange={handleChange}
             placeholder={placeholder}
@@ -79,7 +86,7 @@ function Search({ size, state = "none", value, onChange, onClear, onSearch }) {
         <>
           <Img src={searchImg} alt="Search" />
           <Input
-            $size={size}
+            $mediaSize={mediaSize}
             value={value}
             onChange={handleChange}
             placeholder={placeholder}
@@ -102,20 +109,21 @@ const Container = styled.div`
   border: 1px solid ${gray_200};
   border-radius: 10px;
   padding: 5px;
-  width: ${(props) =>
-    props.$size === "big"
-      ? "490px"
-      : props.$size === "medium"
-      ? "311px"
-      : props.$size === "small"
-      ? "83px"
+
+  min-width: ${(props) =>
+    props.$mediaSize === "big"
+      ? "448px"
+      : props.$mediaSize === "medium"
+      ? "269px"
+      : props.$mediaSize === "small"
+      ? "189px"
       : null};
   height: ${(props) =>
-    props.$size === "big"
+    props.$mediaSize === "big"
       ? "48px"
-      : props.$size === "medium"
-      ? "40px"
-      : props.$size === "small"
+      : props.$mediaSize === "medium"
+      ? "48px"
+      : props.$mediaSize === "small"
       ? "40px"
       : null};
 `;
@@ -130,7 +138,7 @@ const Input = styled.input`
   border: none;
   outline: none;
   width: ${(props) => {
-    if (props.$size === "short") return "311px";
+    if (props.$mediaSize === "short") return "311px";
     return "100%";
   }};
   background-color: ${black_300};
@@ -142,11 +150,11 @@ const Input = styled.input`
     font-family: "Pretendard";
     font-weight: 300;
     font-size: ${(props) =>
-      props.$size === "big"
+      props.$mediaSize === "big"
         ? "14px"
-        : props.$size === "medium"
+        : props.$mediaSize === "medium"
         ? "13px"
-        : props.$size === "small"
+        : props.$mediaSize === "small"
         ? "13px"
         : "13px"};
   }

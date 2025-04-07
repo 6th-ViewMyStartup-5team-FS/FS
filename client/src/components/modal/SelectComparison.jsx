@@ -11,11 +11,12 @@ import {
   gray_200,
 } from "../../styles/colors";
 import Hangul from "hangul-js";
+import { client } from "../../api/index.api";
 
 function SelectComparison({
   isOpen,
   onClose,
-  size,
+  mediaSize,
   selectedCompanies,
   setSelectedCompanies,
   selectedCompany,
@@ -32,35 +33,36 @@ function SelectComparison({
   const [searchSize, setSearchSize] = useState("big");
   const itemsPerPage = 5;
   const [recentCompanies, setRecentCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const isSearching = keyword.trim() !== "";
 
   const modalHeight =
     isSearching || selectedCompanies.length > 0
       ? "858px"
-      : size === "small"
+      : mediaSize === "small"
       ? "112px"
       : "152px";
 
   useEffect(() => {
-    const updateSize = () => {
-      const isMobile = window.innerWidth <= 744;
-
-      setButtonSize(isMobile ? "small" : "big");
-      setSearchSize(isMobile ? "medium" : "big");
+    const fetchCompanies = async () => {
+      try {
+        const res = await client.get("/api/companies");
+        setCompanies(res.data);
+      } catch (e) {
+        console.error("기업 불러오기 실패:", e);
+      } finally {
+        setLoading(false);
+      }
     };
-
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
+    fetchCompanies();
   }, []);
 
   useEffect(() => {
     if (isOpen) {
-      fetch("http://localhost:7777/api/companies")
-        .then((res) => res.json())
-        .then((data) => setCompanies(data))
-        .catch((err) => console.error("기업 데이터 가져오기 실패", err));
+      setKeyword("");
+      setSearchTokens({ raw: "", disassembled: "", cho: "" });
+      setCurrentPage(1);
     }
   }, [isOpen]);
 
@@ -119,7 +121,7 @@ function SelectComparison({
   return (
     <Overlay onClick={onClose}>
       <ModalWrapper
-        $size={size}
+        $mediaSize={mediaSize}
         $height={modalHeight}
         onClick={(e) => e.stopPropagation()}
       >
@@ -129,7 +131,7 @@ function SelectComparison({
         </ModalHeader>
 
         <Search
-          size={searchSize}
+          mediaSize={searchSize}
           state="searching"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
@@ -164,12 +166,11 @@ function SelectComparison({
                 <BtnOutline
                   text="cancel"
                   type="black"
-                  size={buttonSize}
+                  mediaSize={buttonSize}
                   onClick={() => handleRemove(company.id)}
                 />
               </CompanyCard>
             ))}
-            <Divider />
           </>
         )}
 
@@ -201,14 +202,14 @@ function SelectComparison({
                     <BtnOutline
                       text="complete"
                       type="black"
-                      size={buttonSize}
+                      mediaSize={buttonSize}
                       src="existSmall"
                     />
                   ) : (
                     <BtnOutline
                       text="choice"
                       type="orange"
-                      size={buttonSize}
+                      mediaSize={buttonSize}
                       onClick={() => handleSelect(company)}
                     />
                   )}
@@ -218,7 +219,7 @@ function SelectComparison({
 
             <PaginationWrapper>
               <BtnPagination
-                size={buttonSize}
+                mediaSize={buttonSize}
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}
                 totalItems={filteredCompanies.length}
@@ -256,7 +257,7 @@ const ModalWrapper = styled.div`
   font-size: 20px;
   padding: 24px;
   border-radius: 16px;
-  width: ${(props) => (props.$size === "small" ? "343px" : "496px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "343px" : "496px")};
   max-height: 90vh;
   overflow-y: auto;
   height: fit-content;
@@ -326,12 +327,6 @@ const CompanyText = styled.div`
   }
 `;
 
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid #444;
-  margin: 16px 0;
-`;
-
 const PaginationWrapper = styled.div`
   margin-top: 24px;
   display: flex;
@@ -339,7 +334,7 @@ const PaginationWrapper = styled.div`
 `;
 
 const Warning = styled.p`
-  color: ${brand_orange}
+  color: ${brand_orange};
   font-size: 13px;
   text-align: right;
   margin-top: 12px;

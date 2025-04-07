@@ -5,7 +5,13 @@ import eyeInvisibleImg from "../assets/images/passwordEye/eye-invisible.svg";
 import { brand_orange, gray_200 } from "../styles/colors";
 
 // 유저 이름 입력칸
-export function TextInputField({ size, state, placeholder, value, onChange }) {
+export function TextInputField({
+  mediaSize,
+  state,
+  placeholder,
+  value,
+  onChange,
+}) {
   const [isTouched, setIsTouched] = useState(false);
 
   const handleBlur = () => {
@@ -17,7 +23,7 @@ export function TextInputField({ size, state, placeholder, value, onChange }) {
   const showError = state !== "normal" && isTouched && value === "";
 
   return (
-    <Container $size={size} $error={showError} $state={state}>
+    <Container $mediaSize={mediaSize} $error={showError} $state={state}>
       {state === "normal" ? (
         <StyledTextarea
           placeholder={placeholder}
@@ -42,14 +48,19 @@ export function TextInputField({ size, state, placeholder, value, onChange }) {
 }
 
 // 비밀번호 입력칸
-export function PasswordInputField({ size, placeholder, value, onChange }) {
+export function PasswordInputField({
+  mediaSize,
+  placeholder,
+  value,
+  onChange,
+}) {
   const [isTouched, setIsTouched] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const showError = isTouched && value === "";
 
   return (
-    <Container $size={size} $error={showError}>
+    <Container $mediaSize={mediaSize} $error={showError}>
       <StyledInput
         type={isPasswordVisible ? "text" : "password"}
         placeholder={placeholder}
@@ -73,7 +84,7 @@ const Container = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  width: ${(props) => (props.$size === "small" ? "311px" : "448px")};
+  width: ${(props) => (props.$mediaSize === "small" ? "311px" : "448px")};
   border-radius: 8px;
   border: ${(props) =>
     props.$state === "normal"
@@ -81,7 +92,7 @@ const Container = styled.div`
       : props.$error
       ? "2px solid #EB5230"
       : "2px solid #444"};
-  padding: ${(props) => (props.$size === "big" ? "14px" : "10px")};
+  padding: ${(props) => (props.$mediaSize === "big" ? "14px" : "10px")};
   margin-bottom: ${(props) => (props.$error ? "20px" : "10px")};
 `;
 
@@ -94,6 +105,8 @@ const StyledInput = styled.input`
   outline: none;
 
   &::placeholder {
+    font-size: 14px;
+    font-family: "Pretendard";
     color: ${gray_200};
   }
 `;
@@ -109,6 +122,8 @@ const StyledTextarea = styled.textarea`
   height: 108px; /* 적절한 높이 설정 */
 
   &::placeholder {
+    font-size: 14px;
+    font-family: "Pretendard";
     color: ${gray_200};
   }
 `;

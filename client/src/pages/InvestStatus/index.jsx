@@ -7,6 +7,7 @@ import Dropdown from "../../components/Dropdown";
 import TableHeader from "../../components/TableHeader";
 import investmentAPI from "../../api/investment.api";
 import { Link } from "react-router-dom";
+import styles from "./investStatus.module.css";
 
 function InvestState() {
   const [mediaSize, setMediaSize] = useState("");
@@ -17,11 +18,12 @@ function InvestState() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const columns = [
-    { label: "순위", name: "ranking", width: "6%" },
-    { label: "기업명", name: "name", width: "12%" },
-    { label: "기업 소개", name: "description", width: "30%" },
-    { label: "카테고리", name: "category", width: "12%" },
+  //table row 항목
+  let columns = [
+    { label: "순위", name: "ranking", width: "10%" },
+    { label: "기업명", name: "name", width: "16%" },
+    { label: "기업 소개", name: "description", width: "27%" },
+    { label: "카테고리", name: "category", width: "11%" },
     {
       label: "View My Startup 투자 금액",
       name: "totalVirtualInvestmentAmount",
@@ -30,9 +32,32 @@ function InvestState() {
     {
       label: "실제 누적 투자 금액",
       name: "realInvestmentAmount",
-      width: "20%",
+      width: "15%",
     },
   ];
+
+  //반응형 테블릿/모바일 사이즈에선
+  //"View My Startup 투자 금액" >>> "View My Startup" 으로 변경
+  //문자열로 넘겨지기 때문에 word-break가 안됨.
+  //big 일때는 일부러 조건문 안함.
+  if (mediaSize === "medium" || mediaSize === "small") {
+    columns = [
+      { label: "순위", name: "ranking", width: "10%" },
+      { label: "기업명", name: "name", width: "27%" },
+      { label: "기업 소개", name: "description", width: "27%" },
+      { label: "카테고리", name: "category", width: "16%" },
+      {
+        label: "View My Startup",
+        name: "totalVirtualInvestmentAmount",
+        width: "10%",
+      },
+      {
+        label: "실제 누적 투자 금액",
+        name: "realInvestmentAmount",
+        width: "10%",
+      },
+    ];
+  }
 
   const sortOptions = [
     "View My Startup 투자 금액 높은순",
@@ -48,9 +73,10 @@ function InvestState() {
 
   const updateMediaSize = () => {
     const { innerWidth: width } = window;
-    setMediaSize(width > 744 ? "medium" : "small");
+    setMediaSize(width > 1199 ? "big" : width > 375 ? "medium" : "small");
   };
 
+  //브라우저 크기 조절 시
   useEffect(() => {
     updateMediaSize();
     window.addEventListener("resize", updateMediaSize);
@@ -83,20 +109,23 @@ function InvestState() {
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = sortedData.slice(startIndex, endIndex);
 
+  //디버깅
+  console.log(mediaSize);
+
   return (
     <Wrap>
-      <Content>
-        <TopBar>
-          <Title>투자 현황</Title>
+      <div className={styles.content}>
+        <div className={styles.hbundle}>
+          <div className={styles.title}>투자 현황</div>
           <Dropdown
-            size={mediaSize}
+            mediaSize={mediaSize}
             options={sortOptions}
             value={selectedSort}
             onChange={handleSortChange}
           />
-        </TopBar>
+        </div>
 
-        <TableWrap>
+        <div className={styles.tableWrap}>
           <StyledTable>
             <thead>
               <TableHeader columns={columns} />
@@ -112,11 +141,11 @@ function InvestState() {
                       <Link to={`/company-detail/${item.id}`}>{item.name}</Link>
                     </CompanyCell>
                   </TD>
-                  <TD>
+                  <Td>
                     <Link to={`/company-detail/${item.id}`}>
                       {item.description}
                     </Link>
-                  </TD>
+                  </Td>
                   <TD>{item.category}</TD>
                   <TD>
                     {item.totalVirtualInvestmentAmount.toLocaleString()}억 원
@@ -126,18 +155,18 @@ function InvestState() {
               ))}
             </tbody>
           </StyledTable>
-        </TableWrap>
+        </div>
 
         <PaginationWrap>
           <BtnPagination
-            size="big"
+            mediaSize={mediaSize}
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
             totalItems={sortedData.length}
             onPageChange={(page) => setCurrentPage(page)}
           />
         </PaginationWrap>
-      </Content>
+      </div>
     </Wrap>
   );
 }
@@ -155,34 +184,9 @@ const Wrap = styled.div`
   min-height: 100vh;
 `;
 
-const Content = styled.div`
-  width: 1200px;
-  padding: 40px 0;
-  ${media.mobile} {
-    padding: 20px;
-    width: 100%;
-  }
-`;
-
-const TopBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 700;
-  color: white;
-`;
-
-const TableWrap = styled.div`
-  margin-bottom: 32px;
-`;
-
 const StyledTable = styled.table`
   width: 100%;
+  min-width: 696px;
   border-collapse: collapse;
 
   thead tr {
@@ -191,10 +195,24 @@ const StyledTable = styled.table`
 `;
 
 const TD = styled.td`
-  padding: 20px 16px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #333;
   font-size: 14px;
   text-align: center;
+  background-color: #212121;
+  color: #d8d8d8;
+  font-family: "Pretendard", sans-serif;
+  word-break: keep-all;
+  /* width: 696px; */
+`;
+
+const Td = styled.td`
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+  font-size: 14px;
+  text-align: left;
   background-color: #212121;
   color: #d8d8d8;
   font-family: "Pretendard", sans-serif;
