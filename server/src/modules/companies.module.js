@@ -81,6 +81,7 @@ companiesRouter.delete("/:companyId", async (req, res, next) => {
   try {
     const companyId = req.params.companyId;
 
+    // TODO: Cascade
     // 관련 투자 먼저 삭제
     await prisma.investment.deleteMany({
       where: { companyId },

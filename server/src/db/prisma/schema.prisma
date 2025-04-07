@@ -28,6 +28,6 @@ model Investment {
   comment           String
   encryptedPassword String
   createdAt         DateTime @default(now())
-  company           Company  @relation(fields: [companyId], references: [id])
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId         String
 }
