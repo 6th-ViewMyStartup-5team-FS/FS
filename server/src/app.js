@@ -7,7 +7,7 @@ const PORT = 7777;
 
 app.use(express.json());
 app.use(cors());
-app.use(router);
+app.use("/api", router);
 
 // 예외 처리 미들웨어
 app.use((err, req, res, next) => {

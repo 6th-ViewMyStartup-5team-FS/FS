@@ -6,9 +6,9 @@ const rankingsRouter = require("./rankings.module");
 
 const router = express.Router();
 
-router.use("/api/companies", companiesRouter);
-router.use("/api/investments", investmentsRouter);
-router.use("/api/resultCompare", resultCompareRouter);
-router.use("/api/rankings", rankingsRouter);
+router.use("/companies", companiesRouter);
+router.use("/investments", investmentsRouter);
+router.use("/resultCompare", resultCompareRouter);
+router.use("/rankings", rankingsRouter);
 
 module.exports = router;
