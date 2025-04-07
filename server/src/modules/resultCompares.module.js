@@ -48,6 +48,8 @@ resultCompareRouter.get("/", async (req, res, next) => {
  */
 resultCompareRouter.post("/selected", async (req, res, next) => {
   try {
+    // TODO: Prisma 트랜잭션 사용하면 더욱 좋을 듯
+
     const { selectedCompanyId, compareCompanyIds = [] } = req.body;
 
     console.log("선택 기업 ID:", selectedCompanyId);
